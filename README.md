@@ -1,6 +1,10 @@
 picom
 =====
 
+This fork's `nordic/dwm-v13` branch is based on stable v13 and adds a Nord/dwm
+profile, lifetime-animation and mixed-GPU timing fixes, and X11 regression tests.
+See [Nord/dwm setup and validation](nord/README.zh-CN.md).
+
 [![circleci](https://circleci.com/gh/yshui/picom.svg?style=shield)](https://circleci.com/gh/yshui/picom)
 [![codecov](https://codecov.io/gh/yshui/picom/branch/next/graph/badge.svg?token=NRSegi0Gze)](https://codecov.io/gh/yshui/picom)
 [![chat on discord](https://img.shields.io/discord/1106224720833159198?logo=discord)](https://discord.gg/SY5JJzPgME)

@@ -14,6 +14,7 @@ compton
 *.o
 *.d
 build/
+/build-nord/
 compile_commands.json
 build.ninja
 
@@ -50,12 +51,14 @@ target
 *.py
 !/tools/*.py
 !/tests/testcases/*.py
+!/nord/*.py
 
 # Misc files
 .vscode
 *.conf
 !/tests/configs/*.conf
 !/data/*.conf
+!/nord/*.conf
 perf.data
 perf.data.old
 core.*
