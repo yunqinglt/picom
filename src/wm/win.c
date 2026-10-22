@@ -1820,6 +1820,13 @@ bool win_process_animation_and_state_change(struct session *ps, struct win *w, d
 
 	auto wopts = win_options(w);
 	if (wopts.animations[trigger].script == NULL) {
+		// WMs and clients often configure a window again just after mapping it.
+		// With geometry animations disabled, those updates should follow the
+		// mouse/layout immediately without terminating an open/show animation.
+		if (trigger == ANIMATION_TRIGGER_SIZE ||
+		    trigger == ANIMATION_TRIGGER_POSITION) {
+			return win_advance_animation(w, delta_t, &win_ctx);
+		}
 		return true;
 	}
 
