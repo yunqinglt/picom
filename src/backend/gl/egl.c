@@ -380,6 +380,7 @@ const struct backend_operations egl_ops = {
     .get_blur_size = gl_get_blur_size,
     .diagnostics = egl_diagnostics,
     .device_status = gl_device_status,
+    .detect_driver = gl_detect_driver,
     .create_shader = gl_create_window_shader,
     .destroy_shader = gl_destroy_window_shader,
     .get_shader_attributes = gl_get_shader_attributes,

@@ -42,8 +42,9 @@ enum driver detect_driver(xcb_connection_t *, struct backend_base *, xcb_window_
 
 /// Apply driver specified global workarounds. It's safe to call this multiple times.
 void apply_driver_workarounds(struct session *ps, enum driver);
-/// Choose a vblank scheduler based on the driver.
-enum vblank_scheduler_type choose_vblank_scheduler(enum driver driver);
+/// Prefer the active rendering backend over unrelated RANDR providers for timing.
+enum vblank_scheduler_type choose_vblank_scheduler(enum driver driver,
+                                                   struct backend_base *backend);
 
 // Print driver names to stdout, for diagnostics
 static inline void print_drivers(enum driver drivers) {

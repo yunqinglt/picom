@@ -328,6 +328,8 @@ static backend_t *glx_init(session_t *ps, xcb_window_t target) {
 	if (ps->o.vsync) {
 		if (!glx_set_swap_interval(1, ps->c.dpy, tgt)) {
 			log_error("Failed to enable vsync.");
+		} else {
+			log_info("GLX VSync enabled (swap interval 1).");
 		}
 	} else {
 		glx_set_swap_interval(0, ps->c.dpy, tgt);
@@ -536,6 +538,7 @@ const struct backend_operations glx_ops = {
     .get_blur_size = gl_get_blur_size,
     .diagnostics = glx_diagnostics,
     .device_status = gl_device_status,
+    .detect_driver = gl_detect_driver,
     .create_shader = gl_create_window_shader,
     .destroy_shader = gl_destroy_window_shader,
     .get_shader_attributes = gl_get_shader_attributes,

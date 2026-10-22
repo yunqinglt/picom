@@ -1219,7 +1219,7 @@ static bool redirect_start(session_t *ps) {
 		ps->last_schedule_delay = 0;
 		render_statistics_reset(&ps->render_stats);
 		enum vblank_scheduler_type scheduler_type =
-		    choose_vblank_scheduler(ps->drivers);
+		    choose_vblank_scheduler(ps->drivers, ps->backend_data);
 		if (global_debug_options.force_vblank_scheduler != LAST_VBLANK_SCHEDULER) {
 			scheduler_type =
 			    (enum vblank_scheduler_type)global_debug_options.force_vblank_scheduler;

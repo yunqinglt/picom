@@ -9,6 +9,7 @@
 #include "common.h"
 #include "compiler.h"
 #include "log.h"
+#include "test.h"
 
 #include "driver.h"
 
@@ -19,7 +20,13 @@ void apply_driver_workarounds(struct session *ps, enum driver driver) {
 	}
 }
 
-enum vblank_scheduler_type choose_vblank_scheduler(enum driver driver attr_unused) {
+enum vblank_scheduler_type choose_vblank_scheduler(enum driver driver attr_unused,
+                                                   backend_t *backend) {
+	// A compute/offload NVIDIA provider can coexist with an Intel/AMD display.
+	// Keep provider-wide workarounds, but time frames using the active renderer.
+	if (backend && backend->ops.detect_driver) {
+		driver = backend->ops.detect_driver(backend);
+	}
 	enum vblank_scheduler_type type = VBLANK_SCHEDULER_PRESENT;
 #ifdef CONFIG_OPENGL
 	if (driver & DRIVER_NVIDIA) {
@@ -28,6 +35,38 @@ enum vblank_scheduler_type choose_vblank_scheduler(enum driver driver attr_unuse
 #endif
 	return type;
 }
+
+#ifdef UNIT_TEST
+static enum driver test_non_nvidia_renderer(backend_t *base attr_unused) {
+	return 0;
+}
+
+static enum driver test_nvidia_renderer(backend_t *base attr_unused) {
+	return DRIVER_NVIDIA;
+}
+
+TEST_CASE(vblank_scheduler_uses_renderer) {
+	backend_t non_nvidia = {.ops.detect_driver = test_non_nvidia_renderer};
+	backend_t nvidia = {.ops.detect_driver = test_nvidia_renderer};
+	backend_t unknown = {0};
+	// An unrelated NVIDIA provider must not select NVIDIA-specific timing.
+	TEST_EQUAL(choose_vblank_scheduler(DRIVER_NVIDIA | DRIVER_MODESETTING, &non_nvidia),
+	           VBLANK_SCHEDULER_PRESENT);
+#ifdef CONFIG_OPENGL
+	// Preserve the existing NVIDIA workaround and detection fallback.
+	TEST_EQUAL(choose_vblank_scheduler(DRIVER_MODESETTING, &nvidia),
+	           VBLANK_SCHEDULER_SGI_VIDEO_SYNC);
+	TEST_EQUAL(choose_vblank_scheduler(DRIVER_NVIDIA, &unknown),
+	           VBLANK_SCHEDULER_SGI_VIDEO_SYNC);
+	TEST_EQUAL(choose_vblank_scheduler(DRIVER_NVIDIA, NULL),
+	           VBLANK_SCHEDULER_SGI_VIDEO_SYNC);
+#else
+	TEST_EQUAL(choose_vblank_scheduler(DRIVER_NVIDIA, &nvidia), VBLANK_SCHEDULER_PRESENT);
+	TEST_EQUAL(choose_vblank_scheduler(DRIVER_NVIDIA, &unknown), VBLANK_SCHEDULER_PRESENT);
+#endif
+	TEST_EQUAL(choose_vblank_scheduler(DRIVER_MODESETTING, NULL), VBLANK_SCHEDULER_PRESENT);
+}
+#endif
 
 enum driver detect_driver(xcb_connection_t *c, backend_t *backend_data, xcb_window_t window) {
 	enum driver ret = 0;

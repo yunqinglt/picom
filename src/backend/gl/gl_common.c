@@ -1200,6 +1200,11 @@ bool gl_init(struct gl_data *gd, session_t *ps) {
 	return true;
 }
 
+enum driver gl_detect_driver(backend_t *base) {
+	auto gd = (struct gl_data *)base;
+	return gd->is_nvidia ? DRIVER_NVIDIA : 0;
+}
+
 void gl_deinit(struct gl_data *gd) {
 	if (gd->logger) {
 		log_remove_target_tls(gd->logger);

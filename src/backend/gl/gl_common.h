@@ -156,6 +156,7 @@ void gl_root_change(backend_t *base, session_t *);
 void gl_resize(struct gl_data *, int width, int height);
 
 bool gl_init(struct gl_data *gd, session_t *);
+enum driver gl_detect_driver(backend_t *base);
 void gl_deinit(struct gl_data *gd);
 
 GLuint gl_new_texture(void);
